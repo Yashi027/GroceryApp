@@ -34,8 +34,18 @@ public class SellerAuthenticationFilter extends OncePerRequestFilter {
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String path = request.getServletPath();
 		return "OPTIONS".equalsIgnoreCase(request.getMethod())
-				|| !path.startsWith("/api/seller/")
-				|| "/api/seller/login".equals(path);
+				|| !isProtectedPath(path);
+	}
+
+	private boolean isProtectedPath(String path) {
+		if (path.startsWith("/api/seller/")) {
+			return !"/api/seller/login".equals(path);
+		}
+
+		String normalizedPath = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+		return "/api/product/add".equals(normalizedPath)
+				|| "/api/product/stock".equals(normalizedPath)
+				|| "/api/order/seller".equals(normalizedPath);
 	}
 
 	@Override
@@ -43,7 +53,10 @@ public class SellerAuthenticationFilter extends OncePerRequestFilter {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			FilterChain filterChain) throws ServletException, IOException {
-		String token = findCookie(request, "sellerToken");
+		String token = findBearerToken(request);
+		if (token == null) {
+			token = findCookie(request, "sellerToken");
+		}
 		if (token == null || !authService.isValidToken(token, "SELLER")) {
 			writeUnauthorized(response, "Authentication required");
 			return;
@@ -58,6 +71,15 @@ public class SellerAuthenticationFilter extends OncePerRequestFilter {
 		} finally {
 			SecurityContextHolder.clearContext();
 		}
+	}
+
+	private String findBearerToken(HttpServletRequest request) {
+		String authorization = request.getHeader("Authorization");
+		if (authorization == null || !authorization.regionMatches(true, 0, "Bearer ", 0, 7)) {
+			return null;
+		}
+		String token = authorization.substring(7).trim();
+		return token.isEmpty() ? null : token;
 	}
 
 	private String findCookie(HttpServletRequest request, String name) {
