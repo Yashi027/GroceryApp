@@ -39,6 +39,19 @@ class SellerAuthenticationFilterTests {
 	}
 
 	@Test
+	void allowsSellerLogoutWithoutSellerToken() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/seller/logout");
+		request.setServletPath("/api/seller/logout");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		MockFilterChain chain = new MockFilterChain();
+
+		filter.doFilter(request, response, chain);
+
+		assertEquals(200, response.getStatus());
+		assertEquals(request, chain.getRequest());
+	}
+
+	@Test
 	void acceptsValidSellerBearerToken() throws Exception {
 		AuthService authService = mock(AuthService.class);
 		JwtUtil jwtUtil = mock(JwtUtil.class);

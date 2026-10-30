@@ -17,12 +17,28 @@ public class CookieUtil {
 			String cookieName,
 			String token,
 			long maxAgeSeconds) {
+		writeTokenCookie(response, request, cookieName, token, Duration.ofSeconds(maxAgeSeconds));
+	}
+
+	public void clearTokenCookie(
+			HttpServletResponse response,
+			HttpServletRequest request,
+			String cookieName) {
+		writeTokenCookie(response, request, cookieName, "", Duration.ZERO);
+	}
+
+	private void writeTokenCookie(
+			HttpServletResponse response,
+			HttpServletRequest request,
+			String cookieName,
+			String token,
+			Duration maxAge) {
 		ResponseCookie cookie = ResponseCookie.from(cookieName, token)
 				.httpOnly(true)
 				.secure(request.isSecure())
 				.path("/")
 				.sameSite("Lax")
-				.maxAge(Duration.ofSeconds(maxAgeSeconds))
+				.maxAge(maxAge)
 				.build();
 		response.addHeader("Set-Cookie", cookie.toString());
 	}

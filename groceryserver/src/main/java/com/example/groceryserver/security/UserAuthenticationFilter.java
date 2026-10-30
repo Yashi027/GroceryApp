@@ -36,6 +36,7 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
 		return "OPTIONS".equalsIgnoreCase(request.getMethod())
 				|| !(path.startsWith("/api/user/") || path.startsWith("/api/users/"))
 				|| "/api/user/login".equals(path)
+				|| "/api/users/logout".equals(path)
 				|| "/api/users/register".equals(path);
 	}
 

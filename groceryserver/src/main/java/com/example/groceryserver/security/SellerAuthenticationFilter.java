@@ -34,6 +34,7 @@ public class SellerAuthenticationFilter extends OncePerRequestFilter {
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String path = request.getServletPath();
 		return "OPTIONS".equalsIgnoreCase(request.getMethod())
+				|| "/api/seller/logout".equals(path)
 				|| !isProtectedPath(path);
 	}
 

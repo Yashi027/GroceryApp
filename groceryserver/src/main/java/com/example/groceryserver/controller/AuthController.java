@@ -41,6 +41,16 @@ public class AuthController {
 				"user", result.getUser()));
 	}
 
+	@PostMapping("/api/users/logout")
+	public ResponseEntity<Map<String, Object>> logoutUser(
+			HttpServletRequest servletRequest,
+			HttpServletResponse servletResponse) {
+		cookieUtil.clearTokenCookie(servletResponse, servletRequest, "userToken");
+		return ResponseEntity.ok(Map.of(
+				"success", true,
+				"message", "Logged out"));
+	}
+
 	@PostMapping("/api/seller/login")
 	public ResponseEntity<Map<String, Object>> loginSeller(
 			@Valid @RequestBody LoginRequest request,
@@ -52,5 +62,15 @@ public class AuthController {
 		return ResponseEntity.ok(Map.of(
 				"success", true,
 				"message", "Seller login successful"));
+	}
+
+	@PostMapping("/api/seller/logout")
+	public ResponseEntity<Map<String, Object>> logoutSeller(
+			HttpServletRequest servletRequest,
+			HttpServletResponse servletResponse) {
+		cookieUtil.clearTokenCookie(servletResponse, servletRequest, "sellerToken");
+		return ResponseEntity.ok(Map.of(
+				"success", true,
+				"message", "Logged out"));
 	}
 }

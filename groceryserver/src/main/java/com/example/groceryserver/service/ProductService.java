@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -76,6 +77,14 @@ public class ProductService {
 			throw new ProductUploadException(
 					"Product could not be saved", HttpStatus.INTERNAL_SERVER_ERROR, exception);
 		}
+	}
+
+	public List<Product> getProducts() {
+		return productRepository.findAll();
+	}
+
+	public Optional<Product> getProductById(String id) {
+		return productRepository.findById(id);
 	}
 
 	private void validateImage(MultipartFile image) {
